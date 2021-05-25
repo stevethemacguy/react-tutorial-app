@@ -16,39 +16,21 @@ class Board extends React.Component {
     xIsNext: true, // The first move will be X
   };
 
-  markX = (i) => {
+  markSquare = (i) => {
     const squares = this.state.squares.slice(); // Start with a copy of the current array
-    squares[i] = 'X'; // Update the value
+    squares[i] = this.state.xIsNext ? 'X' : 'O'; // Update the value
     this.setState({
       squares: squares,
       xIsNext: !this.state.xIsNext // Switch to the next player's turn
     })
-  };
-
-  markO = (i) => {
-    const squares = this.state.squares.slice(); // Start with a copy of the current array
-    squares[i] = 'O'; // Update the value
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext // Switch to the next player's turn
-    })
-  };
-
-  markSelection = (i) => {
-    if (this.state.xIsNext) {
-      this.markX(i);
-    }
-    else {
-      this.markO(i);
-    }
   };
 
   renderSquare(i) {
-    return <Square value={this.state.squares[i]} handleClick={() => this.markSelection(i)}/>;
+    return <Square value={this.state.squares[i]} handleClick={() => this.markSquare(i)}/>;
   }
 
   render() {
-    const status = 'Next player: X';
+    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
       <div>
