@@ -12,7 +12,12 @@ function Square(props) {
 
 class Board extends React.Component {
   renderSquare(i) {
-    return <Square value={this.props.squares[i]} handleClick={() => this.props.markSquare(i)}/>;
+    return (
+      <Square
+        value={this.props.squares[i]}
+        handleClick={() => this.props.markSquare(i)}
+      />
+    );
   }
 
   render() {
@@ -52,7 +57,9 @@ class Game extends React.Component {
     const current = history[history.length - 1];
     const squares = current.squares.slice();  // Start with a copy of the current state (i.e. squares array)
 
-    if (squares[i] !== null) {
+    // If there's already a value in the square, don't allow players to override the moves of other players.
+    // Also don't allow squares to be marked if there's already a winner.
+    if (calculateWinner(squares) || squares[i]) {
       return;
     }
 
@@ -79,6 +86,20 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
+    // Map the value of each squares state in the history array to a JSX button element, so they can be rendered inside the <ol> below
+    const historicalMoves = history.map((step, move) => {
+      const instructionText = move ? `Goto move #: ${move}` : `Goto game start`;
+      return (
+        <li>
+          <button onClick={()=> {
+            this.setState({
+              history: step
+            })
+          }}>{instructionText}</button>
+        </li>
+      );
+    });
+
     return (
       <div className="game">
         <div className="game-board">
@@ -86,7 +107,9 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+          <ol>
+            {historicalMoves}
+          </ol>
         </div>
       </div>
     );
