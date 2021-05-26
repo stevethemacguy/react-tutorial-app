@@ -52,6 +52,10 @@ class Game extends React.Component {
     const current = history[history.length - 1];
     const squares = current.squares.slice();  // Start with a copy of the current state (i.e. squares array)
 
+    if (squares[i] !== null) {
+      return;
+    }
+
     squares[i] = this.state.xIsNext ? 'X' : 'O'; // Update the value
     // Replace/update the state with the new state
     this.setState({
