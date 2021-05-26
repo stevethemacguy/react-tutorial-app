@@ -49,11 +49,15 @@ class Game extends React.Component {
     history: [{
       squares: [null, null, null, null, null, null, null, null, null]
     }],
+    moveNumber: 0,
     xIsNext: true // The first move will be X
   };
 
   markSquare = (i) => {
-    const history = this.state.history;
+    // const history = this.state.history;
+    // Now that the user can click a button to go back in time to any state, instead of using the full history,
+    // we erase any history beyond the selected step so the user can't go back to the future.
+    const history = this.state.history.slice(0, this.state.moveNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();  // Start with a copy of the current state (i.e. squares array)
 
@@ -67,17 +71,32 @@ class Game extends React.Component {
     // Replace/update the state with the new state
     this.setState({
       // Concat adds the squares array (which is an array with one object) to the end of the history array
-      history: history.concat([{
-        squares: squares,
-      }]),
+      history: history.concat([
+        {
+          squares: squares
+        }
+      ]),
+      //moveNumber: this.state.moveNumber + 1,
+      // Now that the user can go back in time, instead of just incrementing the number, we'll always set the step to the last step
+      moveNumber: history.length,
       xIsNext: !this.state.xIsNext // Switch to the next player's turn
     })
   };
 
+  jumpToStep(moveIndex) {
+    this.setState({
+      //history: step
+      moveNumber: moveIndex,
+      xIsNext: (moveIndex % 2) === 0,
+    })
+  }
+
   render() {
     let status; // This is initialized immediately below so there' no need to initialize it
     const history = this.state.history; // A history of all board states (i.e. the values in all squares)
-    const current = history[history.length - 1]; // The most recent state
+    //const current = history[history.length - 1]; // The most recent state
+    // Instead of using the most recent state, set the state to the the user's selected state instead
+    const current = history[this.state.moveNumber];
 
     let winner = calculateWinner(current?.squares); // check for a winner
     if (winner) {
@@ -86,16 +105,15 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
-    // Map the value of each squares state in the history array to a JSX button element, so they can be rendered inside the <ol> below
-    const historicalMoves = history.map((step, move) => {
-      const instructionText = move ? `Goto move #: ${move}` : `Goto game start`;
+    // Map the value of each squares state in the history array to a JSX button element, so they can be rendered inside the <ol> below.
+    // The 'move' param is the current squares object in the history array
+    const historicalMoves = history.map((move, index) => {
+      const instructionText = index ? `Goto move #: ${index}` : `Goto game start`;
       return (
-        <li>
-          <button onClick={()=> {
-            this.setState({
-              history: step
-            })
-          }}>{instructionText}</button>
+        // Caution: It's normally un-safe to use the index as a key, but React says it's okay because we aren't
+        // going to re-order/remove/insert these buttons dynamically.
+        <li key={index}>
+          <button onClick={() => this.jumpToStep(index)}>{instructionText}</button>
         </li>
       );
     });
