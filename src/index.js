@@ -41,10 +41,9 @@ class Board extends React.Component {
 
 class Game extends React.Component {
   state = {
-    squares: [null, null, null, null, null, null, null, null, null],
-    // history: [{
-    //   squares: [null, null, null, null, null, null, null, null, null]
-    // }],
+    history: [{
+      squares: [null, null, null, null, null, null, null, null, null]
+    }],
     xIsNext: true // The first move will be X
   };
 
@@ -59,7 +58,11 @@ class Game extends React.Component {
 
   render() {
     let status; // This is initialized immediately below so there' no need to initialize it
-    let winner = calculateWinner(this.state.squares); // check for a winner
+
+    const history = this.state.history; // A history of all board states (i.e. the values in all squares)
+    const current = history[history.length - 1]; // The most recent state
+
+    let winner = calculateWinner(current.squares); // check for a winner
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
@@ -69,7 +72,7 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={this.state.squares} status={status} markSquare={this.markSquare}/>
+          <Board squares={current.squares} status={status} markSquare={this.markSquare}/>
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
