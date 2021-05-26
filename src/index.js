@@ -11,37 +11,14 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  state = {
-    squares: [null,null,null,null,null,null,null,null,null],
-    xIsNext: true, // The first move will be X
-  };
-
-  markSquare = (i) => {
-    const squares = this.state.squares.slice(); // Start with a copy of the current array
-    squares[i] = this.state.xIsNext ? 'X' : 'O'; // Update the value
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext // Switch to the next player's turn
-    })
-  };
-
   renderSquare(i) {
-    return <Square value={this.state.squares[i]} handleClick={() => this.markSquare(i)}/>;
+    return <Square value={this.props.squares[i]} handleClick={() => this.props.markSquare(i)}/>;
   }
 
   render() {
-    let status; // This is initialized immediately below so there' no need to initialize it
-
-    let winner = calculateWinner(this.state.squares); // check for a winner
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
-
     return (
       <div>
-        <div className="status">{status}</div>
+        <div className="status">{this.props.status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -63,11 +40,36 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  state = {
+    squares: [null, null, null, null, null, null, null, null, null],
+    // history: [{
+    //   squares: [null, null, null, null, null, null, null, null, null]
+    // }],
+    xIsNext: true // The first move will be X
+  };
+
+  markSquare = (i) => {
+    const squares = this.state.squares.slice(); // Start with a copy of the current array
+    squares[i] = this.state.xIsNext ? 'X' : 'O'; // Update the value
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext // Switch to the next player's turn
+    })
+  };
+
   render() {
+    let status; // This is initialized immediately below so there' no need to initialize it
+    let winner = calculateWinner(this.state.squares); // check for a winner
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board squares={this.state.squares} status={status} markSquare={this.markSquare}/>
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
