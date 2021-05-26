@@ -48,21 +48,27 @@ class Game extends React.Component {
   };
 
   markSquare = (i) => {
-    const squares = this.state.squares.slice(); // Start with a copy of the current array
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();  // Start with a copy of the current state (i.e. squares array)
+
     squares[i] = this.state.xIsNext ? 'X' : 'O'; // Update the value
+    // Replace/update the state with the new state
     this.setState({
-      squares: squares,
+      // Concat adds the squares array (which is an array with one object) to the end of the history array
+      history: history.concat([{
+        squares: squares,
+      }]),
       xIsNext: !this.state.xIsNext // Switch to the next player's turn
     })
   };
 
   render() {
     let status; // This is initialized immediately below so there' no need to initialize it
-
     const history = this.state.history; // A history of all board states (i.e. the values in all squares)
     const current = history[history.length - 1]; // The most recent state
 
-    let winner = calculateWinner(current.squares); // check for a winner
+    let winner = calculateWinner(current?.squares); // check for a winner
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
@@ -72,7 +78,7 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares} status={status} markSquare={this.markSquare}/>
+          <Board squares={current.squares} status={status} markSquare={(i) => this.markSquare(i)}/>
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
