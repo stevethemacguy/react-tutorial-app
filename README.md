@@ -1,3 +1,7 @@
+# react-tutorial-app
+Created using the official React tutorial at https://reactjs.org/tutorial. 
+Note: This app is not meant to be a well-structured or follow any best practices.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
